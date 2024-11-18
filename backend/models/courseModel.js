@@ -36,14 +36,29 @@ const courseSchema = mongoose.Schema(
       {
         title: { type: String, required: true },
         type: { type: String, enum: ["video", "text", "quiz"], required: true },
-        url: { type: String, required: function() { return this.type === "video"; } }, // Required if content is video
-        text: { type: String, required: function() { return this.type === "text"; } }, // Required if content is text
+        url: {
+          type: String,
+          required: function () { return this.type === "video"; } // Required if content type is video
+        },
+        text: {
+          type: String,
+          required: function () { return this.type === "text"; } // Required if content type is text
+        },
         quiz: [
           {
-            question: { type: String, required: true },
-            options: [String],
-            answer: { type: String, required: true },
-          },
+            question: {
+              type: String,
+              required: function () { return this.parent().type === "quiz"; } // Required if content type is quiz
+            },
+            options: {
+              type: [String],
+              required: function () { return this.parent().type === "quiz"; } // Required if content type is quiz
+            },
+            answer: {
+              type: String,
+              required: function () { return this.parent().type === "quiz"; } // Required if content type is quiz
+            },
+          }
         ],
       },
     ],
